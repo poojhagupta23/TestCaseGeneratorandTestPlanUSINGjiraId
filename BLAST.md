@@ -12,13 +12,10 @@ Before any code is written or tools are built:
         - Behavioral rules
         - Architectural invariants
 
-
-2. **Halt Execution** You are strictly forbidden from writing scripts in `tools/`  until:
+2. **Halt Execution** You are strictly forbidden from writing API Routes in `src/app/api/` until:
     - Discovery Questions are answered
     - The Data Schema is defined in `gemini.md` 
     - `task_plan.md`  has an approved Blueprint
-
-
 
 ## 🏗️ Phase 1: B - Blueprint (Vision & Logic)
 **1. Discovery:** Ask the user the following 5 questions:
@@ -28,7 +25,39 @@ Before any code is written or tools are built:
 - **Source of Truth:** Where does the primary data live?
 - **Delivery Payload:** How and where should the final result be delivered?
 - **Behavioral Rules:** How should the system "act"? (e.g., Tone, specific logic constraints, or "Do Not" rules).
+
 **2. Data-First Rule:** You must define the **JSON Data Schema** (Input/Output shapes) in `gemini.md`. Coding only begins once the "Payload" shape is confirmed.
 
 **3. Research:** Search github repos and other databases for any helpful resources for this project
 
+## Phase 2: L - Link (Connectivity)
+**1. Verification:** Test all API connections and `.env.local` credentials. **2. Handshake:** Build minimal API Routes in `src/app/api/` to verify that external services (Jira, Groq) are responding correctly. Do not proceed to full logic if the "Link" is broken.
+
+---
+
+## ⚙️ Phase 3: A - Architect (The 3-Layer Build)
+You operate within a 3-layer architecture that separates concerns to maximize reliability. LLMs are probabilistic; business logic must be deterministic.
+
+**Layer 1: Architecture (**`**architecture/**`**)**
+- Technical SOPs written in Markdown.
+- Define goals, inputs, tool logic, and edge cases.
+- **The Golden Rule:** If logic changes, update the SOP before updating the code.
+
+**Layer 2: Navigation (Decision Making)**
+- This is your reasoning layer. You route data between SOPs and Tools.
+- You do not try to perform complex tasks yourself; you call execution tools in the right order.
+
+**Layer 3: Tools (**`**src/app/api/**`** and **`**src/lib/**`**)**
+- Deterministic API Routes and Utility functions (e.g. Next.js App Router). Atomic and testable.
+- Environment variables/tokens are stored in `.env.local` or securely in Zustand LocalStorage.
+- Use stateless edge or serverless functions for all intermediate operations.
+
+---
+
+## ✨ Phase 4: S - Stylize (Refinement & UI)
+**1. Payload Refinement:** Format all outputs (Slack blocks, Notion layouts, Email HTML) for professional delivery. **2. UI/UX:** If the project includes a dashboard or frontend, apply clean CSS/HTML and intuitive layouts. **3. Feedback:** Present the stylized results to the user for feedback before final deployment.
+
+---
+
+## 🛰️ Phase 5: T - Trigger (Deployment)
+**1. Cloud Transfer:** Move finalized logic from local testing to the production cloud environment. **2. Automation:** Set up execution triggers (Cron jobs, Webhooks, or Listeners). **3. Documentation:** Finalize the **Maintenance Log** in `gemini.md` for long-term stability.
