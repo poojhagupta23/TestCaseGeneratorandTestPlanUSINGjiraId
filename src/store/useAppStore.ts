@@ -12,12 +12,13 @@ export interface TestPlanRecord {
 
 interface AppState {
   groqKey: string;
+  groqModel: string;
   jiraUrl: string;
   jiraEmail: string;
   jiraToken: string;
   history: TestPlanRecord[];
   
-  setSettings: (settings: { groqKey?: string; jiraUrl?: string; jiraEmail?: string; jiraToken?: string }) => void;
+  setSettings: (settings: { groqKey?: string; groqModel?: string; jiraUrl?: string; jiraEmail?: string; jiraToken?: string }) => void;
   addHistoryRecord: (record: TestPlanRecord) => void;
   removeHistoryRecord: (id: string) => void;
 }
@@ -26,6 +27,7 @@ export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
       groqKey: '',
+      groqModel: 'llama-3.3-70b-versatile',
       jiraUrl: '',
       jiraEmail: '',
       jiraToken: '',

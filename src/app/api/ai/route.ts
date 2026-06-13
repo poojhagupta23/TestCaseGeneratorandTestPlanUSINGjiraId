@@ -3,7 +3,7 @@ import { Groq } from 'groq-sdk';
 
 export async function POST(request: Request) {
   try {
-    const { prompt, systemPrompt, groqKey } = await request.json();
+    const { prompt, systemPrompt, groqKey, groqModel } = await request.json();
     
     let apiKey = groqKey || process.env.GROQ_API_KEY;
     if (apiKey && apiKey.startsWith('Groq-')) {
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
         { role: 'system', content: systemPrompt },
         { role: 'user', content: prompt }
       ],
-      model: 'llama-3.3-70b-versatile',
+      model: groqModel || 'llama-3.3-70b-versatile',
       temperature: 0.1, // Low temperature for deterministic test planning
     });
 

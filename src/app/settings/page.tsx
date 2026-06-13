@@ -6,32 +6,68 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
+import { RefreshCw } from "lucide-react"
 
 export default function SettingsPage() {
-  const { groqKey, jiraUrl, jiraEmail, jiraToken, setSettings } = useAppStore()
+  const { groqKey, groqModel, jiraUrl, jiraEmail, jiraToken, setSettings } = useAppStore()
   
   const [localGroq, setLocalGroq] = useState("")
+  const [localGroqModel, setLocalGroqModel] = useState("llama-3.3-70b-versatile")
   const [localJiraUrl, setLocalJiraUrl] = useState("")
   const [localJiraEmail, setLocalJiraEmail] = useState("")
   const [localJiraToken, setLocalJiraToken] = useState("")
+  
+  const [availableModels, setAvailableModels] = useState<any[]>([])
+  const [loadingModels, setLoadingModels] = useState(false)
 
   // Hydrate local state after mount
   useEffect(() => {
     setLocalGroq(groqKey)
+    if (groqModel) setLocalGroqModel(groqModel)
     setLocalJiraUrl(jiraUrl)
     setLocalJiraEmail(jiraEmail)
     setLocalJiraToken(jiraToken)
-  }, [groqKey, jiraUrl, jiraEmail, jiraToken])
+  }, [groqKey, groqModel, jiraUrl, jiraEmail, jiraToken])
 
   const handleSave = () => {
     setSettings({
       groqKey: localGroq,
+      groqModel: localGroqModel,
       jiraUrl: localJiraUrl,
       jiraEmail: localJiraEmail,
       jiraToken: localJiraToken,
     })
     toast.success("Settings saved successfully!")
+  }
+
+  const fetchModels = async () => {
+    if (!localGroq) {
+      toast.error("Please enter a Groq API Key first.")
+      return
+    }
+    setLoadingModels(true)
+    try {
+      const res = await fetch('/api/groq/models', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ groqKey: localGroq })
+      })
+      if (!res.ok) throw new Error(await res.text())
+      const data = await res.json()
+      
+      const modelsList = data.models || []
+      // Sort models to bring popular ones to top or just alphabetically
+      modelsList.sort((a: any, b: any) => a.id.localeCompare(b.id))
+      setAvailableModels(modelsList)
+      
+      toast.success("Models fetched successfully!")
+    } catch (err: any) {
+      toast.error(err.message || "Failed to fetch models")
+    } finally {
+      setLoadingModels(false)
+    }
   }
 
   return (
@@ -44,18 +80,43 @@ export default function SettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Groq AI Configuration</CardTitle>
-          <CardDescription>Enter your Groq API key to enable AI generation.</CardDescription>
+          <CardDescription>Enter your Groq API key and select your preferred LLM.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="groq">Groq API Key</Label>
-            <Input 
-              id="groq" 
-              type="password" 
-              value={localGroq} 
-              onChange={(e) => setLocalGroq(e.target.value)} 
-              placeholder="gsk_..." 
-            />
+            <div className="flex gap-2">
+              <Input 
+                id="groq" 
+                type="password" 
+                value={localGroq} 
+                onChange={(e) => setLocalGroq(e.target.value)} 
+                placeholder="gsk_..." 
+              />
+              <Button variant="outline" onClick={fetchModels} disabled={loadingModels || !localGroq}>
+                {loadingModels ? <RefreshCw className="h-4 w-4 animate-spin mr-2" /> : null}
+                Fetch Models
+              </Button>
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="groqModel">Preferred Model</Label>
+            <Select value={localGroqModel} onValueChange={(val) => { if (val) setLocalGroqModel(val) }}>
+              <SelectTrigger id="groqModel">
+                <SelectValue placeholder="Select a model" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableModels.length > 0 ? (
+                  availableModels.map(m => (
+                    <SelectItem key={m.id} value={m.id}>{m.id}</SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value={localGroqModel}>{localGroqModel}</SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">Click 'Fetch Models' to see all available options from Groq.</p>
           </div>
         </CardContent>
       </Card>

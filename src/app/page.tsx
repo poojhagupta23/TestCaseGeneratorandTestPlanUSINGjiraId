@@ -22,7 +22,7 @@ export default function DashboardPage() {
   const [testPlan, setTestPlan] = useState<string>("")
   const [testCases, setTestCases] = useState<any[]>([])
 
-  const { groqKey, jiraUrl, jiraEmail, jiraToken, addHistoryRecord } = useAppStore()
+  const { groqKey, groqModel, jiraUrl, jiraEmail, jiraToken, addHistoryRecord } = useAppStore()
 
   const handleGenerate = async () => {
     if (!jiraId) {
@@ -66,6 +66,7 @@ export default function DashboardPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           groqKey,
+          groqModel,
           systemPrompt: "You are a Senior QA Engineer. Generate a comprehensive Test Plan for the provided Jira requirement. Include sections: Objective, Scope, Features To Test, Test Strategy, Risk Analysis. Be concise but professional. Output ONLY Markdown.",
           prompt: requirementText
         })
@@ -81,6 +82,7 @@ export default function DashboardPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           groqKey,
+          groqModel,
           systemPrompt: `You are a Senior QA Engineer. Based on the following Test Plan and Requirement, generate test cases covering Functional, Negative, Boundary, UI.
 OUTPUT FORMAT: Return ONLY a strict JSON array of objects. Do not include markdown formatting or backticks.
 REQUIRED KEYS in each object exactly as spelled:
