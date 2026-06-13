@@ -35,3 +35,8 @@
 - **Fix:** Redeployed using `--scope poojha-gupta-s-projects`.
 - **Result:** Application successfully deployed to `https://testplanandtestcase.vercel.app`.
 - **Action:** Pushed all codebase and documentation updates to the `main` branch of the GitHub repository.
+
+- **Action:** Upgraded DOCX generation logic to include enterprise formatting (Titles, Headings styling, Arial font, spacing) for a professional Test Plan export.
+- **Action:** Redeployed to Vercel.
+
+- **Action:** Implemented advanced Markdown Table parsing in DOCX export to handle grid layouts and <br> line breaks perfectly.

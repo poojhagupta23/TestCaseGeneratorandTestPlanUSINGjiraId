@@ -25,3 +25,7 @@
 ### 5. Deployment Constraints
 - **Vercel CLI Issue:** Deploying via the non-interactive Vercel CLI failed initially because it required an explicit `--scope` flag when multiple teams are present on the account. 
 - **Resolution:** Added `--scope poojha-gupta-s-projects` to successfully deploy the Next.js app to production.
+
+- **DOCX Formatting Upgrade:** Enhanced the `generateDocx` utility to output professionally styled Test Plan documents. Added custom heading colors (Arial, blue/dark blue palette), centralized document titles, and proper line spacing to ensure the exported file matches standard corporate Test Plan layouts instead of plain text.
+
+- **Markdown Table Parsing in DOCX:** Discovered that the LLM occasionally generates Markdown tables with inline HTML `<br>` tags. We built a custom markdown-table-to-docx parser in `src/lib/exportUtils.ts` to natively render `docx.Table` elements complete with header shading, cell margins, and line break parsing for pristine, corporate-ready exports.
